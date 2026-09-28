@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تأهيل فروع معتمد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@600;700&display=swap">
+<style>
+:root{
+  --ground:#eef1f5; --surface:#ffffff; --surface-2:#f6f8fb; --ink:#152033; --muted:#5b6577; --line:#dbe0e8;
+  --navy:#1b2f5b; --navy-ink:#1b2f5b; --on-navy:#ffffff; --gold:#a07a2c; --gold-soft:#f4ecdb;
+  --ok:#1d7446; --ok-soft:#e1f1e8; --warn:#9a5806; --warn-soft:#fbeed9; --bad:#b3261e; --bad-soft:#fbe4e2;
+  --shadow:0 1px 2px rgba(20,32,60,.06),0 4px 14px rgba(20,32,60,.05);
+  --r:10px;
+  --f-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+  --f-disp:"Noto Kufi Arabic","IBM Plex Sans Arabic",Tahoma,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0e131b; --surface:#161d29; --surface-2:#1b2332; --ink:#e6eaf1; --muted:#9aa4b6; --line:#2a3445;
+    --navy:#223a6d; --navy-ink:#a9bff0; --on-navy:#ffffff; --gold:#d6b46e; --gold-soft:#372c16;
+    --ok:#62c792; --ok-soft:#15321f; --warn:#e5a85a; --warn-soft:#3a2912; --bad:#f08a80; --bad-soft:#3d1a18;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0e131b; --surface:#161d29; --surface-2:#1b2332; --ink:#e6eaf1; --muted:#9aa4b6; --line:#2a3445;
+  --navy:#223a6d; --navy-ink:#a9bff0; --on-navy:#ffffff; --gold:#d6b46e; --gold-soft:#372c16;
+  --ok:#62c792; --ok-soft:#15321f; --warn:#e5a85a; --warn-soft:#3a2912; --bad:#f08a80; --bad-soft:#3d1a18;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65;padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:1120px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-disp);text-wrap:balance;margin:0;line-height:1.35}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+
+/* masthead */
+.mast{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;padding-block:28px 18px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.mast .eyebrow{font-size:12.5px;color:var(--gold);font-weight:600;letter-spacing:.02em}
+.mast h1{font-size:clamp(22px,3.4vw,30px);color:var(--navy-ink)}
+.mast p{margin:4px 0 0;color:var(--muted);font-size:14px;max-width:62ch}
+.deadline{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 14px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line)}
+.deadline b{font-family:var(--f-disp);font-size:15px}
+.deadline span{font-size:12.5px;color:var(--muted)}
+.deadline.due b{color:var(--bad)}
+.banner{padding:10px 14px;border-radius:var(--r);background:var(--warn-soft);color:var(--warn);font-size:13.5px;margin-bottom:16px}
+.banner[data-kind="info"]{background:var(--surface-2);color:var(--muted)}
+
+/* section bars (numbered like the memo) */
+.bar{display:flex;align-items:center;gap:12px;background:var(--navy);color:var(--on-navy);border-radius:8px;padding:9px 14px;margin-block:26px 14px}
+.bar .n{font-family:var(--f-disp);color:#e3c27d;font-size:14px}
+.bar h2{font-size:16px;flex:1}
+.bar .aside{font-size:12.5px;opacity:.85}
+
+/* branch cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.card{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--gold);transform:translateY(-1px)}
+.card:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.card h3{font-size:17px}
+.meter{height:6px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--gold);border-radius:99px}
+.meter.full i{background:var(--ok)}
+.kv{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:13px;color:var(--muted)}
+.kv b{color:var(--ink);font-weight:600;text-align:left}
+.pct{font-family:var(--f-disp);font-size:22px;color:var(--navy-ink);line-height:1}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.idle{background:var(--surface-2);color:var(--muted)}
+.card .go{font-size:13px;color:var(--gold);font-weight:600}
+
+/* matrix */
+.tablebox{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+th{font-weight:600;color:var(--muted);font-size:12.5px;background:var(--surface-2)}
+th:first-child,td:first-child{text-align:right}
+tr:last-child td{border-bottom:0}
+td a{color:var(--navy-ink);font-weight:600;text-decoration:none}
+.tick{color:var(--ok);font-weight:700}
+.dash{color:var(--line)}
+.half{color:var(--warn);font-weight:700}
+
+/* branch view */
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between;padding-block:22px 6px}
+.back{background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;color:var(--muted);font-size:13.5px}
+.back:hover{color:var(--ink);border-color:var(--muted)}
+.bhead{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center;justify-content:space-between;padding-block:8px 18px;border-bottom:1px solid var(--line)}
+.bhead h1{font-size:clamp(22px,3.4vw,30px);color:var(--navy-ink)}
+.bhead .sub{color:var(--muted);font-size:13.5px}
+.bstats{display:flex;gap:22px;flex-wrap:wrap}
+.bstats div{display:flex;flex-direction:column;gap:2px}
+.bstats small{color:var(--muted);font-size:12px}
+.bstats strong{font-family:var(--f-disp);font-size:20px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:16px}
+.tab{background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;color:var(--muted);font-weight:600;font-size:14px;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--navy-ink);border-color:var(--gold)}
+.tab .c{font-size:12px;color:var(--muted);margin-inline-start:4px}
+
+.req{display:grid;grid-template-columns:auto 1fr;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:12px}
+.req.ready{border-color:color-mix(in srgb,var(--ok) 45%,var(--line))}
+.req .idx{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--gold-soft);color:var(--gold);font-weight:700;font-size:13px}
+.req.ready .idx{background:var(--ok-soft);color:var(--ok)}
+.req .head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:flex-start;justify-content:space-between}
+.req h3{font-size:15.5px;font-family:var(--f-body);font-weight:700}
+.req .hint{color:var(--muted);font-size:13px;margin-top:2px}
+.check{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:99px;font-size:13.5px;font-weight:600;cursor:pointer;user-select:none;background:var(--surface-2)}
+.check input{width:17px;height:17px;accent-color:var(--ok);margin:0}
+.check.on{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+.check[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.files{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.file{display:inline-flex;align-items:center;gap:8px;max-width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px 6px 10px;font-size:13px}
+.file a{color:var(--ink);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:26ch}
+.file a:hover{color:var(--navy-ink);text-decoration:underline}
+.file .t{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.04em}
+.x{background:none;border:0;color:var(--muted);padding:0 4px;font-size:16px;line-height:1}
+.x:hover{color:var(--bad)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 14px;font-size:13.5px;font-weight:600}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+.btn.primary:hover{filter:brightness(1.12)}
+.btn.gold{background:var(--gold);color:#fff;border-color:var(--gold)}
+.btn.danger{color:var(--bad)}
+.btn.od{justify-content:center;text-decoration:none;color:var(--navy-ink);border-color:color-mix(in srgb,var(--navy-ink) 35%,var(--line))}
+.howto{background:var(--surface);border:1px solid var(--line);border-color:transparent;background:var(--gold-soft);border-radius:8px;padding:10px 14px;font-size:13.5px;color:var(--ink);margin-bottom:4px}
+.howto b{color:var(--ink)}
+.cfg{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.cfg h3{font-size:15px;color:var(--navy-ink)}
+.fname{color:var(--ink);font-weight:600;user-select:all}
+.odphotos{margin-top:16px;padding:12px 14px;border:1px dashed var(--line);border-radius:var(--r);background:var(--surface-2)}
+.btn.od.primary{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+.btn.od.gold{background:var(--gold);color:#fff;border-color:var(--gold)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.upl{position:relative;overflow:hidden}
+.upl input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.note{font-size:12.5px;color:var(--muted)}
+.note.warn{color:var(--warn)}
+.note.err{color:var(--bad)}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted);font-weight:500}
+label.f .req-mark{color:var(--bad)}
+.inp{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;color:var(--ink)}
+.inp:focus{border-color:var(--gold);outline:none;background:var(--surface)}
+textarea.inp{min-height:88px;resize:vertical;line-height:1.6}
+.inline-date{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.inline-date .inp{width:auto;padding:5px 8px}
+
+/* projects */
+.catgroup{margin-top:18px}
+.cathead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding-block:6px;border-bottom:2px solid var(--gold-soft)}
+.cathead h3{font-size:15.5px;color:var(--navy-ink)}
+.cathead h3 span{color:var(--muted);font-family:var(--f-body);font-size:13px;font-weight:500;margin-inline-start:6px}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-top:12px}
+.proj{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.thumbs{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:2px;aspect-ratio:16/8;background:var(--surface-2);max-width:100%}
+.thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.thumbs img:first-child{grid-row:1/3}
+.thumbs .ph{display:grid;place-items:center;color:var(--muted);font-size:12px;background:var(--surface-2)}
+.thumbs .ph:first-child{grid-row:1/3}
+.proj .body{padding:12px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.proj h4{margin:0;font-size:15px;font-weight:700}
+.proj .meta{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--muted)}
+.proj .desc{font-size:13px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.proj .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--line)}
+.empty{padding:18px;border:1px dashed var(--line);border-radius:var(--r);color:var(--muted);font-size:13.5px;text-align:center;margin-top:12px}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(10,16,28,.55);display:grid;place-items:center;padding:16px;z-index:20}
+.modal{background:var(--surface);border-radius:12px;width:min(760px,100%);max-height:calc(100% - 8px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.modal header{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--navy);color:var(--on-navy);padding:12px 18px;position:sticky;top:0;z-index:1}
+.modal header h2{font-size:16px}
+.modal header .x{color:#fff;font-size:22px}
+.modal .content{padding:18px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface-2);padding:7px 14px;font-size:13.5px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--on-navy)}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:8px}
+.photo{position:relative;aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:var(--surface-2);border:1px solid var(--line);max-width:100%}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo .x{position:absolute;top:4px;left:4px;background:rgba(0,0,0,.6);color:#fff;border-radius:6px;padding:2px 7px}
+.modal footer{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--surface)}
+.confirm{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px;color:var(--bad)}
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:9px 16px;border-radius:8px;font-size:13.5px;z-index:30}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:520px){.bstats{gap:16px}.plist{grid-template-columns:1fr}}
+
+.file .fn{color:inherit;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:28ch}
+
+body{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap"><div id="main"></div></div>
+<div id="modal-root"></div>
+<div id="toast" class="toast" hidden></div>
+<script>
+(function(){
+const BRANCHES=[{key:'makkah',name:'مكة المكرمة'},{key:'jeddah',name:'جدة'},{key:'madinah',name:'المدينة المنورة'},{key:'baha',name:'الباحة'},{key:'mikhwah',name:'المخواة'}];
+const ITEMS=[
+  {key:'iban',title:'شهادة الآيبان / الحساب البنكي',hint:'شهادة أو خطاب من البنك يوضح رقم الآيبان باسم الفرع.',kind:'file'},
+  {key:'address',title:'العنوان الوطني',hint:'شهادة العنوان الوطني المسجل للفرع (سُبل).',kind:'file'},
+  {key:'sce',title:'ترخيص الهيئة السعودية للمهندسين',hint:'ترخيص/تصنيف المكتب الهندسي ساري المفعول.',kind:'file',expiry:true},
+  {key:'contact',title:'بيانات التواصل الرسمية',hint:'رقم الهاتف، البريد الإلكتروني، والشخص المسؤول عن الفرع.',kind:'form'},
+  {key:'cr',title:'السجل التجاري والتراخيص الداعمة',hint:'السجل التجاري وأي وثائق أو تراخيص أخرى ذات علاقة بنشاط الفرع.',kind:'file',expiry:true}
+];
+const CATS=[{key:'res',name:'مشاريع سكنية',short:'سكني',plural:'سكنية'},{key:'com',name:'مشاريع تجارية',short:'تجاري',plural:'تجارية'},{key:'ind',name:'مشاريع صناعية',short:'صناعي',plural:'صناعية'}];
+const STATUS={ongoing:'جاري',done:'منتهي'};
+const DEADLINE='2026-09-27', MIN_PHOTOS=3, MAX_MB=35;
+const START=(window.__START||new URLSearchParams(location.search).get('b')||location.hash.slice(1)||'').toLowerCase();
+
+const S={branches:{},projects:[],files:[],view:'overview',tab:'docs',conn:'loading',busy:{},errs:{},pending:false,modal:null,confirm:null};
+const $=s=>document.querySelector(s);
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtN=n=>Number(n||0).toLocaleString('en-US');
+const bName=k=>(BRANCHES.find(b=>b.key===k)||{}).name||k;
+function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2800)}
+const API_URL='https://script.google.com/macros/s/AKfycbzRCTSf9JR-MZbJF8pu5gaZ3m-9BJXYqKux73hYF5Ob6YWEn-C7w1Srvcv1lZcikZMq/exec';
+function run(fn,...a){
+  if(window.google&&google.script&&google.script.run)return new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(no)[fn](...a));
+  if(!/^https:/.test(API_URL))return Promise.reject(new Error('رابط الخادم غير مضبوط.'));
+  return fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args:a})})
+    .then(r=>r.json()).then(j=>{if(!j.ok)throw new Error(j.error);return j.data});
+}
+const errMsg=e=>(e&&e.message)?e.message.replace(/^Exception:\s*/,''):'تعذر الحفظ، أعد المحاولة.';
+
+/* file -> base64 (large photos are resized to 3000px, JPEG 90%) */
+function readB64(blob){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]);r.onerror=no;r.readAsDataURL(blob)})}
+async function prep(file){
+  let blob=file,name=file.name,mime=file.type||'application/octet-stream';
+  if(/^image\/(jpeg|png|webp|heic)/.test(mime)&&file.size>3*1024*1024){
+    try{
+      const bmp=await createImageBitmap(file);const sc=Math.min(1,3000/Math.max(bmp.width,bmp.height));
+      const c=document.createElement('canvas');c.width=Math.round(bmp.width*sc);c.height=Math.round(bmp.height*sc);
+      c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+      blob=await new Promise(r=>c.toBlob(r,'image/jpeg',0.9));mime='image/jpeg';name=name.replace(/\.\w+$/,'')+'.jpg';
+    }catch(_){}
+  }
+  if(blob.size>MAX_MB*1024*1024)throw new Error(`الملف «${file.name}» أكبر من ${MAX_MB} ميجابايت.`);
+  return {name,mime,b64:await readB64(blob)};
+}
+
+/* ---------- derived ---------- */
+const bdoc=k=>S.branches[k]||{};
+const filesOf=(k,ik)=>S.files.filter(f=>f.branch===k&&f.item===ik);
+const item=(k,ik)=>({files:filesOf(k,ik),expiry:bdoc(k)[ik+'Expiry']||''});
+const photosOf=pid=>S.files.filter(f=>f.item==='p:'+pid);
+const contactFilled=k=>{const c=bdoc(k);return !!(c.phone&&c.email&&c.person)};
+const isReady=(k,ik)=>ik==='contact'?contactFilled(k):(item(k,ik).files||[]).length>0;
+const projOf=k=>S.projects.filter(p=>p.branch===k);
+function projMissing(p){
+  const m=[];if(!p.name)m.push('الاسم');if(!p.status)m.push('الحالة');if(!p.owner)m.push('الجهة المالكة');if(!p.location)m.push('الموقع');
+  if(!p.start)m.push('تاريخ البداية');if(!p.end)m.push('تاريخ النهاية');if(!Number(p.value))m.push('القيمة');if(!p.description)m.push('الوصف');
+  const n=photosOf(p.id).length;if(n<MIN_PHOTOS)m.push(`${MIN_PHOTOS-n} صور`);return m;
+}
+function stats(k){
+  const docsReady=ITEMS.filter(it=>isReady(k,it.key)).length;const ps=projOf(k);
+  const complete=ps.filter(p=>!projMissing(p).length).length;const byCat={};CATS.forEach(c=>byCat[c.key]=ps.filter(p=>p.category===c.key).length);
+  const pct=Math.round(docsReady/ITEMS.length*50+(ps.length?complete/ps.length:0)*50);
+  let state='idle',label='لم يبدأ';if(docsReady||ps.length){state='warn';label='قيد الاستكمال'}
+  if(docsReady===ITEMS.length&&ps.length&&complete===ps.length){state='ok';label='مكتمل'}
+  return {docsReady,total:ps.length,complete,byCat,pct,state,label};
+}
+function deadlineInfo(){
+  const n=new Date(),t=new Date(n.getFullYear(),n.getMonth(),n.getDate());const [y,m,d]=DEADLINE.split('-').map(Number);
+  const days=Math.round((new Date(y,m-1,d)-t)/864e5);
+  if(days>1)return {txt:`متبقٍ ${days} أيام`,due:false};if(days===1)return {txt:'متبقٍ يوم واحد',due:true};
+  if(days===0)return {txt:'اليوم آخر موعد للتسليم',due:true};return {txt:`تجاوز الموعد بـ ${-days} يوم`,due:true};
+}
+
+/* ---------- render ---------- */
+function schedule(){const a=document.activeElement;if(a&&$('#main').contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.type!=='file'){S.pending=true;return}render()}
+document.addEventListener('focusout',()=>setTimeout(()=>{if(S.pending){S.pending=false;schedule()}},0));
+function banner(){
+  if(S.conn==='loading')return `<div class="banner" data-kind="info">جارٍ تحميل بيانات الفروع…</div>`;
+  if(S.conn==='off')return `<div class="banner">تعذر الاتصال. تحقق من الإنترنت ثم <button class="btn" data-act="reload">أعد التحميل</button></div>`;
+  return '';
+}
+function render(){$('#main').innerHTML=S.view==='overview'?renderOverview():renderBranch(S.view)}
+const shortTitle=k=>({iban:'الآيبان',address:'العنوان الوطني',sce:'ترخيص الهيئة',contact:'بيانات التواصل',cr:'السجل التجاري'}[k]);
+
+function renderOverview(){
+  const dl=deadlineInfo();const all=BRANCHES.map(b=>({b,s:stats(b.key)}));
+  const done=all.filter(x=>x.s.state==='ok').length;const totalProj=all.reduce((a,x)=>a+x.s.total,0);
+  return `<header class="mast"><div><div class="eyebrow">منصة معتمد · الهيئة السعودية للمهندسين</div><h1>استكمال ملفات تأهيل الفروع</h1>
+    <p>يختار كل مدير فرع اسم فرعه، ويرفع الوثائق النظامية فتُحتسب جاهزة تلقائياً، ثم يضيف مشاريع الفرع المنفذة مع صورها.</p></div>
+    <div class="deadline ${dl.due?'due':''}"><span>الموعد النهائي · الأحد 27/09/2026م</span><b>${dl.txt}</b></div></header>
+  ${banner()}
+  <div class="bar"><span class="n">الفروع</span><h2>اختر فرعك</h2><span class="aside num">${done} من ${BRANCHES.length} مكتمل · ${fmtN(totalProj)} مشروع</span></div>
+  <div class="cards">${all.map(({b,s})=>`<button class="card" data-go="${b.key}">
+      <div class="top"><h3>${esc(b.name)}</h3><span class="pill ${s.state}">${s.label}</span></div>
+      <div style="display:flex;align-items:baseline;gap:8px"><span class="pct num">${s.pct}%</span><span class="note">نسبة الإنجاز</span></div>
+      <div class="meter ${s.pct===100?'full':''}"><i style="width:${s.pct}%"></i></div>
+      <div class="kv num"><span>الوثائق النظامية</span><b>${s.docsReady} / ${ITEMS.length}</b><span>المشاريع المكتملة</span><b>${s.complete} / ${s.total}</b><span>سكني/تجاري/صناعي</span><b>${s.byCat.res} · ${s.byCat.com} · ${s.byCat.ind}</b></div>
+      <span class="go">دخول الفرع ←</span></button>`).join('')}</div>
+  <div class="bar"><span class="n">المتابعة</span><h2>حالة المتطلبات لكل فرع</h2><button class="btn" data-act="reload" style="padding:4px 12px;font-size:12.5px">تحديث</button></div>
+  <div class="tablebox"><table><thead><tr><th>الفرع</th>${ITEMS.map(it=>`<th>${shortTitle(it.key)}</th>`).join('')}${CATS.map(c=>`<th>${c.short}</th>`).join('')}<th>مشاريع ناقصة</th></tr></thead>
+  <tbody>${all.map(({b,s})=>`<tr><td><a href="#" data-go="${b.key}">${esc(b.name)}</a></td>
+    ${ITEMS.map(it=>`<td>${isReady(b.key,it.key)?'<span class="tick">✓</span>':'<span class="dash">—</span>'}</td>`).join('')}
+    ${CATS.map(c=>`<td class="num">${s.byCat[c.key]||'<span class="dash">—</span>'}</td>`).join('')}
+    <td class="num">${s.total-s.complete?`<span class="half">${s.total-s.complete}</span>`:'<span class="dash">—</span>'}</td></tr>`).join('')}</tbody></table></div>
+  <p class="note" style="margin-top:8px">✓ جاهز (يتحول تلقائياً عند رفع الملف) · — لم يُرفع بعد. المشروع يُعد مكتملاً عند تعبئة جميع حقوله ورفع ${MIN_PHOTOS} صور على الأقل.</p>`;
+}
+
+function renderBranch(k){
+  const b=BRANCHES.find(x=>x.key===k);const s=stats(k);const dl=deadlineInfo();
+  return `<div class="crumbs"><button class="back" data-go="overview">→ كل الفروع</button><span class="note ${dl.due?'err':''}">${dl.txt} · 27/09/2026م</span></div>
+  <div class="bhead"><div><div class="sub">فرع</div><h1>${esc(b.name)}</h1></div>
+    <div class="bstats num"><div><small>الإنجاز</small><strong>${s.pct}%</strong></div><div><small>الوثائق الجاهزة</small><strong>${s.docsReady}/${ITEMS.length}</strong></div>
+    <div><small>المشاريع المكتملة</small><strong>${s.complete}/${s.total}</strong></div><div><small>الحالة</small><span class="pill ${s.state}" style="margin-top:4px">${s.label}</span></div></div></div>
+  ${banner()}
+  <div class="tabs" role="tablist">
+    <button class="tab" aria-selected="${S.tab==='docs'}" data-tab="docs">أولاً: الوثائق النظامية <span class="c num">${s.docsReady}/${ITEMS.length}</span></button>
+    <button class="tab" aria-selected="${S.tab==='projects'}" data-tab="projects">ثانياً: المشاريع المنفذة <span class="c num">${s.total}</span></button></div>
+  ${S.tab==='docs'?renderDocs(k):renderProjects(k)}`;
+}
+
+function renderDocs(k){
+  const on=S.conn==='on';
+  return ITEMS.map((it,n)=>{
+    const i=item(k,it.key);const files=i.files||[];const key=k+':'+it.key;const busy=S.busy[key];const err=S.errs[key];const c=bdoc(k);const rd=isReady(k,it.key);
+    let body='';
+    if(it.kind==='form'){
+      body=`<div class="fields">
+        <label class="f">رقم الهاتف<input class="inp num" id="c-phone" data-contact="phone" dir="ltr" inputmode="tel" value="${esc(c.phone)}" placeholder="05xxxxxxxx"></label>
+        <label class="f">البريد الإلكتروني<input class="inp" id="c-email" data-contact="email" dir="ltr" type="email" value="${esc(c.email)}" placeholder="branch@example.com"></label>
+        <label class="f">الشخص المسؤول<input class="inp" id="c-person" data-contact="person" value="${esc(c.person)}" placeholder="الاسم والمسمى الوظيفي"></label>
+      </div><p class="note" style="margin:6px 0 0">تُحفظ البيانات تلقائياً عند الانتقال من الحقل.</p>`;
+    }else{
+      body=`<div class="files">${files.map(f=>`<span class="file"><span class="t">${/\.pdf$/i.test(f.name)?'PDF':'FILE'}</span><a class="fn" href="${esc(f.url)}" target="_blank" rel="noopener" title="${esc(f.name)}">${esc(f.name)}</a><button class="x" title="حذف" data-act="askdel" data-i="${it.key}" data-id="${f.id}">×</button></span>`).join('')||'<span class="note">لم يُرفع أي ملف بعد.</span>'}</div>
+      <div class="row">
+        ${on?`<label class="btn upl ${busy?'':'primary'}">${busy?'جارٍ الرفع…':files.length?'رفع ملف إضافي':'رفع الملف'}<input type="file" id="up-${it.key}" multiple data-upload="${it.key}" ${busy?'disabled':''}></label>`:''}
+        ${it.expiry?`<label class="inline-date">تاريخ الانتهاء<input class="inp num" type="date" id="exp-${it.key}" data-expiry="${it.key}" value="${esc(i.expiry)}"></label>`:''}
+        <span class="note">PDF أو صورة أو أي ملف، حتى ${MAX_MB} ميجابايت.</span></div>`;
+      if(S.confirm&&S.confirm.i===it.key){const f=files.find(x=>x.id===S.confirm.id);
+        if(f)body+=`<div class="row confirm">حذف «${esc(f.name)}»؟ <button class="btn danger" data-act="del" data-i="${it.key}" data-id="${f.id}">حذف</button><button class="btn" data-act="nodel">إلغاء</button></div>`}
+    }
+    if(err)body+=`<p class="note err" style="margin:8px 0 0">${esc(err)}</p>`;
+    return `<section class="req ${rd?'ready':''}"><span class="idx num">${n+1}</span><div>
+      <div class="head"><div><h3>${esc(it.title)}</h3><div class="hint">${esc(it.hint)}</div></div>
+      <span class="pill ${rd?'ok':'idle'}">${rd?'جاهز':it.kind==='form'?'لم تكتمل البيانات':'لم يُرفع بعد'}</span></div>${body}</div></section>`;
+  }).join('');
+}
+
+function renderProjects(k){
+  const ps=projOf(k);
+  return CATS.map(c=>{const list=ps.filter(p=>p.category===c.key);
+    return `<div class="catgroup"><div class="cathead"><h3>${c.name}<span class="num">${list.length} مشروع</span></h3>
+      <button class="btn primary" data-act="new" data-cat="${c.key}">+ إضافة مشروع ${c.short}</button></div>
+      ${list.length?`<div class="plist">${list.map(projCard).join('')}</div>`:`<div class="empty">لا توجد مشاريع ${c.plural} لهذا الفرع حتى الآن.</div>`}</div>`}).join('');
+}
+function projCard(p){
+  const miss=projMissing(p);const n=photosOf(p.id).length;
+  return `<article class="proj"><div class="body">
+    <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><h4>${esc(p.name||'مشروع بدون اسم')}</h4><span class="pill ${p.status==='done'?'ok':'idle'}">${STATUS[p.status]||'—'}</span></div>
+    <div class="meta num">${p.owner?`<span>المالك: ${esc(p.owner)}</span>`:''}${p.location?`<span>${esc(p.location)}</span>`:''}${Number(p.value)?`<span>${fmtN(p.value)} ر.س</span>`:''}${p.start?`<span>${esc(p.start)} ← ${esc(p.end||'…')}</span>`:''}<span>الصور: ${n}</span></div>
+    ${p.description?`<div class="desc">${esc(p.description)}</div>`:''}</div>
+    <div class="foot">${miss.length?`<span class="note warn">ينقص: ${esc(miss.join('، '))}</span>`:`<span class="pill ok">مكتمل</span>`}<button class="btn" data-act="edit" data-id="${p.id}">تعديل</button></div></article>`;
+}
+
+/* ---------- modal ---------- */
+function openProject(p,cat){
+  S.modal=p?JSON.parse(JSON.stringify(p)):{id:null,branch:S.view,category:cat,status:'done',name:'',owner:'',location:'',start:'',end:'',value:'',description:''};
+  S.modal._busy=false;S.modal._err='';S.modal._confirmDel=false;renderModal();
+}
+function renderModal(){
+  const r=$('#modal-root');const d=S.modal;
+  if(!d){r.innerHTML='';document.body.style.overflow='';return}
+  document.body.style.overflow='hidden';const ph=d.id?photosOf(d.id):[];const n=ph.length;
+  r.innerHTML=`<div class="scrim" data-act="scrim"><div class="modal" role="dialog" aria-modal="true">
+    <header><h2>${d.id?'بيانات المشروع':'مشروع جديد'} · فرع ${esc(bName(d.branch))}</h2><button class="x" data-act="close" aria-label="إغلاق">×</button></header>
+    <div class="content"><div class="fields" style="margin-top:0">
+      <label class="f" style="grid-column:1/-1">اسم المشروع<input class="inp" id="p-name" data-p="name" value="${esc(d.name)}"></label>
+      <div class="f">تصنيف المشروع<div class="seg">${CATS.map(c=>`<button type="button" data-pcat="${c.key}" aria-pressed="${d.category===c.key}">${c.short}</button>`).join('')}</div></div>
+      <div class="f">حالة المشروع<div class="seg">${Object.entries(STATUS).map(([k,v])=>`<button type="button" data-pstat="${k}" aria-pressed="${d.status===k}">${v}</button>`).join('')}</div></div>
+      <label class="f">الجهة المالكة / العميل<input class="inp" id="p-owner" data-p="owner" value="${esc(d.owner)}"></label>
+      <label class="f">موقع المشروع<input class="inp" id="p-location" data-p="location" value="${esc(d.location)}" placeholder="المدينة، الحي"></label>
+      <label class="f">تاريخ بداية المشروع<input class="inp num" type="date" id="p-start" data-p="start" value="${esc(d.start)}"></label>
+      <label class="f">${d.status==='ongoing'?'تاريخ النهاية المتوقع':'تاريخ نهاية المشروع'}<input class="inp num" type="date" id="p-end" data-p="end" value="${esc(d.end)}"></label>
+      <label class="f">قيمة المشروع (ر.س)<input class="inp num" id="p-value" data-p="value" inputmode="numeric" dir="ltr" value="${Number(d.value)?fmtN(d.value):''}" placeholder="0"></label>
+      <label class="f" style="grid-column:1/-1">وصف مختصر للمشروع<textarea class="inp" id="p-description" data-p="description" placeholder="طبيعة المشروع، المساحات، نطاق أعمال المكتب (تصميم / إشراف)…">${esc(d.description)}</textarea></label>
+    </div>
+    <div style="margin-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px">
+      <div><b style="font-size:14px">صور المشروع</b> <span class="note num">${n} من ${MIN_PHOTOS} مطلوبة · صور متنوعة وعالية الجودة</span></div>
+      <label class="btn upl ${d._busy?'':'gold'}">${d._busy?'جارٍ الرفع…':'رفع صور'}<input type="file" id="p-photos" accept="image/*" multiple data-act="photos" ${d._busy?'disabled':''}></label></div>
+    <div class="files">${ph.map(ph=>`<span class="file"><span class="t">IMG</span><a class="fn" href="${esc(ph.url)}" target="_blank" rel="noopener">${esc(ph.name)}</a><button class="x" data-act="rmphoto" data-id="${ph.id}" aria-label="حذف الصورة">×</button></span>`).join('')||'<span class="note">لم تُرفع صور بعد.</span>'}</div>
+    ${d._err?`<p class="note err">${esc(d._err)}</p>`:''}</div>
+    <footer><div>${d.id?(d._confirmDel?`<span class="confirm">حذف المشروع وصوره؟ <button class="btn danger" data-act="pdel">حذف</button><button class="btn" data-act="pnodel">إلغاء</button></span>`:`<button class="btn danger" data-act="paskdel">حذف المشروع</button>`):''}</div>
+      <div style="display:flex;gap:8px"><button class="btn" data-act="close">إغلاق</button><button class="btn primary" data-act="psave" ${d._busy?'disabled':''}>حفظ المشروع</button></div></footer>
+  </div></div>`;
+}
+function body(d){return {id:d.id,branch:d.branch,category:d.category,status:d.status,name:d.name.trim(),owner:d.owner.trim(),location:d.location.trim(),start:d.start,end:d.end,value:Number(String(d.value).replace(/[^\d.]/g,''))||0,description:d.description.trim()}}
+function upsertLocal(row){const i=S.projects.findIndex(p=>p.id===row.id);if(i>=0)S.projects[i]=row;else S.projects.push(row)}
+
+/* ---------- events ---------- */
+document.addEventListener('click',async e=>{
+  const go=e.target.closest('[data-go]');if(go){e.preventDefault();nav(go.dataset.go);return}
+  const tab=e.target.closest('[data-tab]');if(tab){S.tab=tab.dataset.tab;render();return}
+  if(S.modal&&e.target.closest('[data-pcat]')){S.modal.category=e.target.closest('[data-pcat]').dataset.pcat;renderModal();return}
+  if(S.modal&&e.target.closest('[data-pstat]')){S.modal.status=e.target.closest('[data-pstat]').dataset.pstat;renderModal();return}
+  const a=e.target.closest('[data-act]');if(!a)return;const act=a.dataset.act;const k=S.view;
+  if(act==='scrim'&&e.target!==a)return;
+  if(act==='reload'){load();return}
+  if(act==='new'){openProject(null,a.dataset.cat);return}
+  if(act==='edit'){const p=S.projects.find(x=>x.id===a.dataset.id);if(p)openProject(p);return}
+  if(act==='close'||act==='scrim'){S.modal=null;renderModal();render();return}
+  if(act==='askdel'){S.confirm={i:a.dataset.i,id:a.dataset.id};render();return}
+  if(act==='nodel'){S.confirm=null;render();return}
+  if(act==='del'){const {i,id}=a.dataset;S.confirm=null;
+    try{await run('deleteFile',id);S.files=S.files.filter(f=>f.id!==id);render();toast('تم حذف الملف')}catch(err){S.errs[k+':'+i]=errMsg(err);render()}return}
+  const d=S.modal;if(!d)return;
+  if(act==='rmphoto'){try{await run('deleteFile',a.dataset.id);S.files=S.files.filter(f=>f.id!==a.dataset.id);renderModal();render()}catch(err){d._err=errMsg(err);renderModal()}return}
+  if(act==='paskdel'){d._confirmDel=true;renderModal();return}
+  if(act==='pnodel'){d._confirmDel=false;renderModal();return}
+  if(act==='pdel'){try{await run('deleteProject',d.id);S.projects=S.projects.filter(p=>p.id!==d.id);S.modal=null;renderModal();render();toast('تم حذف المشروع')}catch(err){d._err=errMsg(err);renderModal()}return}
+  if(act==='psave'){
+    if(!d.name.trim()){d._err='اكتب اسم المشروع قبل الحفظ.';renderModal();return}
+    d._busy=true;renderModal();
+    try{const r=await run('saveProject',body(d));d.id=r.id;upsertLocal(r);S.modal=null;renderModal();render();
+      const miss=projMissing(S.projects.find(p=>p.id===r.id));toast(miss.length?'تم الحفظ · ينقص: '+miss.join('، '):'تم حفظ المشروع مكتملاً')}
+    catch(err){d._busy=false;d._err=errMsg(err);renderModal()}
+  }
+});
+document.addEventListener('input',e=>{const el=e.target;if(el.dataset.p&&S.modal)S.modal[el.dataset.p]=el.dataset.p==='value'?el.value.replace(/[^\d]/g,''):el.value});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.modal){S.modal=null;renderModal();render()}});
+document.addEventListener('change',async e=>{
+  const el=e.target;const k=S.view;
+  if(el.dataset.p==='value'&&S.modal){el.value=S.modal.value?fmtN(S.modal.value):'';return}
+  if(el.dataset.contact){
+    const f=el.dataset.contact;const v=el.value.trim();if((bdoc(k)[f]||'')===v)return;
+    S.branches[k]={...bdoc(k),[f]:v};
+    try{await run('saveBranch',k,{[f]:v});toast('تم حفظ بيانات التواصل');schedule()}catch(err){S.errs[k+':contact']=errMsg(err);render()}return}
+  if(el.dataset.expiry){const key=el.dataset.expiry+'Expiry';try{await run('saveBranch',k,{[key]:el.value});S.branches[k]={...bdoc(k),[key]:el.value};toast('تم حفظ تاريخ الانتهاء')}catch(err){toast(errMsg(err))}return}
+  if(el.dataset.upload&&el.files.length){
+    const ik=el.dataset.upload;const key=k+':'+ik;const files=[...el.files];S.busy[key]=true;delete S.errs[key];render();
+    try{for(const f of files){const p=await prep(f);const r=await run('uploadDoc',k,ik,p.name,p.mime,p.b64);S.files.push(r);render()}
+      toast(files.length>1?`تم رفع ${files.length} ملفات`:'تم رفع الملف')}
+    catch(err){S.errs[key]=errMsg(err)}
+    S.busy[key]=false;render();return}
+  if(el.dataset.act==='photos'&&S.modal&&el.files.length){
+    const d=S.modal;const files=[...el.files];
+    if(!d.name.trim()){d._err='اكتب اسم المشروع أولاً، ثم ارفع الصور.';renderModal();return}
+    d._busy=true;d._err='';renderModal();
+    try{if(!d.id){const r=await run('saveProject',body(d));d.id=r.id;upsertLocal(r)}
+      for(const f of files){const p=await prep(f);const r=await run('uploadPhoto',d.id,p.name,p.mime,p.b64);S.files.push(r);if(S.modal===d)renderModal()}}
+    catch(err){d._err=errMsg(err)}
+    d._busy=false;if(S.modal===d)renderModal();render();
+  }
+});
+
+/* ---------- data ---------- */
+async function load(){
+  try{const st=await run('getAll');S.branches=st.branches;S.projects=st.projects;S.files=st.files;S.conn='on'}catch(_){S.conn='off'}
+  schedule();
+}
+function nav(v){S.view=BRANCHES.some(b=>b.key===v)?v:'overview';S.confirm=null;S.tab='docs';try{history.replaceState(null,'',S.view==='overview'?location.pathname:'?b='+S.view)}catch(_){}render();window.scrollTo(0,0)}
+if(BRANCHES.some(b=>b.key===START))S.view=START;
+render();load();
+setInterval(()=>{if(!S.modal&&!Object.values(S.busy).some(Boolean)&&document.visibilityState==='visible')load()},90000);
+})();
+</script>
+
+</body>
+</html>
