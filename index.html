@@ -217,7 +217,7 @@ const ITEMS=[
 ];
 const CATS=[{key:'res',name:'مشاريع سكنية',short:'سكني',plural:'سكنية'},{key:'com',name:'مشاريع تجارية',short:'تجاري',plural:'تجارية'},{key:'ind',name:'مشاريع صناعية',short:'صناعي',plural:'صناعية'}];
 const STATUS={ongoing:'جاري',done:'منتهي'};
-const DEADLINE='2026-09-27', MIN_PHOTOS=3, MAX_MB=35;
+const DEADLINE='2026-10-01', MIN_PHOTOS=3, MAX_MB=35;
 const START=(window.__START||new URLSearchParams(location.search).get('b')||location.hash.slice(1)||'').toLowerCase();
 
 const S={branches:{},projects:[],files:[],view:'overview',tab:'docs',conn:'loading',busy:{},errs:{},pending:false,modal:null,confirm:null};
@@ -295,7 +295,7 @@ function renderOverview(){
   const done=all.filter(x=>x.s.state==='ok').length;const totalProj=all.reduce((a,x)=>a+x.s.total,0);
   return `<header class="mast"><div><div class="eyebrow">منصة معتمد · الهيئة السعودية للمهندسين</div><h1>استكمال ملفات تأهيل الفروع</h1>
     <p>يختار كل مدير فرع اسم فرعه، ويرفع الوثائق النظامية فتُحتسب جاهزة تلقائياً، ثم يضيف مشاريع الفرع المنفذة مع صورها.</p></div>
-    <div class="deadline ${dl.due?'due':''}"><span>الموعد النهائي · الأحد 27/09/2026م</span><b>${dl.txt}</b></div></header>
+    <div class="deadline ${dl.due?'due':''}"><span>الموعد النهائي · الخميس 01/10/2026م</span><b>${dl.txt}</b></div></header>
   ${banner()}
   <div class="bar"><span class="n">الفروع</span><h2>اختر فرعك</h2><span class="aside num">${done} من ${BRANCHES.length} مكتمل · ${fmtN(totalProj)} مشروع</span></div>
   <div class="cards">${all.map(({b,s})=>`<button class="card" data-go="${b.key}">
@@ -315,7 +315,7 @@ function renderOverview(){
 
 function renderBranch(k){
   const b=BRANCHES.find(x=>x.key===k);const s=stats(k);const dl=deadlineInfo();
-  return `<div class="crumbs"><button class="back" data-go="overview">→ كل الفروع</button><span class="note ${dl.due?'err':''}">${dl.txt} · 27/09/2026م</span></div>
+  return `<div class="crumbs"><button class="back" data-go="overview">→ كل الفروع</button><span class="note ${dl.due?'err':''}">${dl.txt} · 01/10/2026م</span></div>
   <div class="bhead"><div><div class="sub">فرع</div><h1>${esc(b.name)}</h1></div>
     <div class="bstats num"><div><small>الإنجاز</small><strong>${s.pct}%</strong></div><div><small>الوثائق الجاهزة</small><strong>${s.docsReady}/${ITEMS.length}</strong></div>
     <div><small>المشاريع المكتملة</small><strong>${s.complete}/${s.total}</strong></div><div><small>الحالة</small><span class="pill ${s.state}" style="margin-top:4px">${s.label}</span></div></div></div>
